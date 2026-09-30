@@ -1,0 +1,172 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import Tag from '../components/Tag.astro';
+
+const allWorks = [
+  { id: 1, title: "MNIST Neural Network Engine", category: "Deep Learning", description: "A complete deep learning framework and autograd engine built from scratch in C++17.", tags: ["C++", "ML"], image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop" },
+  { id: 2, title: "YOLOv8 Mask Detection", category: "Computer Vision", description: "Custom trained YOLOv8 model deployed as an interactive Streamlit web application.", tags: ["Python", "CV", "Web"], image: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=800&auto=format&fit=crop" },
+  { id: 3, title: "IELTS Score Predictor", category: "NLP", description: "Fine-tuned BERT regression model with a Flask REST API for real-time IELTS score prediction.", tags: ["NLP", "API"], image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=800&auto=format&fit=crop" },
+  { id: 4, title: "MOSS-TTS 1.7B Pipeline", category: "Audio ML", description: "End-to-end Gradio inference pipeline for the MOSS-TTS zero-shot voice-cloning model.", tags: ["ML", "Python"], image: "https://images.unsplash.com/photo-1589903308904-1010c2294adc?q=80&w=800&auto=format&fit=crop" },
+  { id: 5, title: "Power BI Dashboards", category: "Data Visualization", description: "Interactive BI reports using DAX and Power Query for analyzing datasets.", tags: ["BI", "Data"], image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop" },
+  { id: 6, title: "YouTube Transcript Scraper", category: "Chrome Extension", description: "Manifest V3 extension for bulk transcript extraction using concurrent processing.", tags: ["JS", "Web"], image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop" }
+];
+
+const allTags = [...new Set(allWorks.map(w => w.tags).flat())];
+---
+
+<Layout title="Works | HL.">
+  <div class="container section">
+    <div class="header-section">
+      <h1>Selected Works</h1>
+      <p class="text-secondary">A collection of projects spanning machine learning, computer vision, data visualization, and full-stack development.</p>
+    </div>
+
+    <!-- Filter System (Client-side) -->
+    <div class="filter-section">
+      <button class="filter-btn active" data-filter="all">All</button>
+      {allTags.map(tag => (
+        <button class="filter-btn" data-filter={tag}>{tag}</button>
+      ))}
+    </div>
+
+    <div class="grid-2" id="works-grid">
+      {allWorks.map(work => (
+        <div class="work-item" data-tags={work.tags.join(',')}>
+          <Card href="#" class="work-card">
+            <div class="work-image-container">
+              <img src={work.image} alt={work.title} class="work-image" loading="lazy" />
+            </div>
+            <div class="work-info">
+              <div class="work-meta text-sm text-secondary font-mono">{work.category}</div>
+              <h3 class="work-title">{work.title}</h3>
+              <p class="work-description text-secondary">{work.description}</p>
+              <div class="work-tags mt-auto">
+                {work.tags.map(tag => (
+                  <Tag name={tag} />
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .header-section {
+    margin-bottom: 3rem;
+  }
+
+  .filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--secondary-text);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--primary-text);
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #F0E6DC;
+  }
+
+  /* Work Cards (Works Page Scoped Sizes) */
+  .work-item {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    animation: workItemIn 0.35s ease both;
+  }
+
+  .work-item[hidden] {
+    display: none !important;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: none;
+  }
+
+  @keyframes workItemIn {
+    0% {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .work-image-container {
+    height: 240px;
+  }
+
+  .work-title {
+    font-size: 1.5rem;
+  }
+
+  .work-description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
+
+<script>
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const workItems = document.querySelectorAll<HTMLElement>('.work-item');
+
+  const applyFilter = (selectedFilter: string) => {
+    workItems.forEach((item: HTMLElement) => {
+      const rawTags = item.getAttribute('data-tags') ?? '';
+      const tags = rawTags.split(',').map((tag: string) => tag.trim()).filter(Boolean);
+      const matches = selectedFilter === 'all' || tags.includes(selectedFilter);
+
+      if (matches) {
+        item.hidden = false;
+        item.style.animation = 'none';
+        void item.offsetWidth;
+        item.style.animation = 'workItemIn 0.35s ease both';
+      } else {
+        item.hidden = true;
+        item.style.animation = 'none';
+      }
+    });
+
+    filterBtns.forEach((button: HTMLButtonElement) => {
+      const isActive = button.getAttribute('data-filter') === selectedFilter;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  filterBtns.forEach((button: HTMLButtonElement) => {
+    button.addEventListener('click', () => {
+      applyFilter(button.getAttribute('data-filter') ?? 'all');
+    });
+  });
+</script>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  name: string;
+  href?: string;
+  active?: boolean;
+}
+
+const { name, href, active = false } = Astro.props;
+const Element = href ? 'a' : 'span';
+const activeClass = active ? 'active' : '';
+---
+
+<Element href={href} class={`tag ${activeClass}`}>
+  {name}
+</Element>

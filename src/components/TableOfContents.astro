@@ -1,0 +1,102 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const toc = headings.filter(h => h.depth <= 3);
+---
+
+<nav class="toc" aria-label="Table of Contents">
+  <h4 class="toc-title text-muted uppercase tracking-wide text-sm">On this page</h4>
+  <ul class="toc-list">
+    {toc.map((heading) => (
+      <li class={`toc-item depth-${heading.depth}`}>
+        <a href={`#${heading.slug}`} class="toc-link">
+          {heading.text}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
+  }
+
+  .toc-title {
+    margin-bottom: 1rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toc-item {
+    line-height: 1.4;
+  }
+
+  .depth-2 {
+    margin-left: 0.5rem;
+  }
+
+  .depth-3 {
+    margin-left: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .toc-link {
+    color: var(--secondary-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+  }
+
+  .toc-link:hover, .toc-link.active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  // Script to highlight active section on scroll
+  const observerOptions = {
+    root: null,
+    rootMargin: '-100px 0px -66% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Remove active class from all links
+        document.querySelectorAll('.toc-link').forEach(link => {
+          link.classList.remove('active');
+        });
+        
+        // Add active class to corresponding link
+        const id = entry.target.getAttribute('id');
+        const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      }
+    });
+  }, observerOptions);
+
+  // Track all headings that have an id
+  document.querySelectorAll('h1[id], h2[id], h3[id]').forEach((section) => {
+    observer.observe(section);
+  });
+</script>

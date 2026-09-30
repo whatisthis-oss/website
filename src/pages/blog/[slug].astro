@@ -1,0 +1,249 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Tag from '../../components/Tag.astro';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.id }, props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+// Get prev/next posts
+const allPosts = await getCollection('blog');
+allPosts.sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+const currentIndex = allPosts.findIndex(p => p.id === entry.id);
+const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+---
+
+<Layout title={`${entry.data.title} | HL.`} description={entry.data.description}>
+  <div class="container section">
+    
+    <div class="blog-layout">
+      <!-- Main Content -->
+      <article class="blog-article">
+        <header class="article-header">
+          <div class="blog-meta text-muted text-sm mb-4">
+            <time datetime={entry.data.date}>{new Date(entry.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+            {entry.data.readingTime && <span class="divider">•</span>}
+            {entry.data.readingTime && <span>{entry.data.readingTime}</span>}
+          </div>
+          <h1 class="article-title">{entry.data.title}</h1>
+          <p class="article-description text-secondary">{entry.data.description}</p>
+          <div class="blog-tags mt-4">
+            {entry.data.tags.map((tag) => (
+              <Tag name={tag} href={`/tags/${tag}`} />
+            ))}
+          </div>
+        </header>
+
+        {entry.data.image && (
+          <div class="article-hero-image">
+            <img src={entry.data.image} alt={entry.data.title} />
+          </div>
+        )}
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        <hr class="article-divider" />
+
+        <!-- Prev / Next Navigation -->
+        <nav class="post-navigation">
+          {prevPost ? (
+            <a href={`/blog/${prevPost.id}`} class="nav-prev card">
+              <span class="nav-label text-muted text-sm font-mono">Previous</span>
+              <span class="nav-title">{prevPost.data.title}</span>
+            </a>
+          ) : <div />}
+          
+          {nextPost ? (
+            <a href={`/blog/${nextPost.id}`} class="nav-next card">
+              <span class="nav-label text-muted text-sm font-mono">Next</span>
+              <span class="nav-title">{nextPost.data.title}</span>
+            </a>
+          ) : <div />}
+        </nav>
+      </article>
+
+      <!-- Sidebar TOC (Desktop) -->
+      <aside class="sidebar-desktop">
+        <TableOfContents headings={headings} />
+      </aside>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .blog-layout {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    position: relative;
+    max-width: 64rem;
+    margin: 0 auto;
+  }
+
+  .sidebar-desktop {
+    display: none;
+    width: 240px;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .sidebar-desktop {
+      display: block;
+    }
+  }
+
+  .blog-article {
+    flex: 1;
+    max-width: 65ch; /* Optimal reading width */
+    margin: 0;
+  }
+
+  .article-header {
+    margin-bottom: 3rem;
+  }
+
+  .mb-4 { margin-bottom: 1rem; }
+  .mt-4 { margin-top: 1rem; }
+
+  .blog-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .article-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .article-title {
+      font-size: 3rem;
+    }
+  }
+
+  .article-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .blog-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .article-hero-image {
+    margin-bottom: 3rem;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  /* Prose Styles */
+  .prose {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--primary-text);
+  }
+
+  :global(.prose h1), :global(.prose h2), :global(.prose h3), :global(.prose h4) {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-weight: 600;
+    scroll-margin-top: 6rem;
+  }
+
+  :global(.prose h2) { font-size: 1.875rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  :global(.prose h3) { font-size: 1.5rem; }
+
+  :global(.prose p) { margin-bottom: 1.25em; }
+  
+  :global(.prose ul), :global(.prose ol) {
+    margin-bottom: 1.25em;
+    padding-left: 1.5em;
+  }
+
+  :global(.prose li) { margin-bottom: 0.5em; }
+
+  :global(.prose code) {
+    font-family: var(--font-mono);
+    background-color: var(--elevated);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  :global(.prose pre) {
+    background-color: var(--elevated);
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+  }
+
+  :global(.prose pre code) {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  :global(.prose blockquote) {
+    border-left: 4px solid var(--accent);
+    padding-left: 1em;
+    font-style: italic;
+    color: var(--secondary-text);
+    margin-bottom: 1.5em;
+  }
+
+  .article-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4rem 0;
+  }
+
+  .post-navigation {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .post-navigation {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .nav-prev, .nav-next {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  .nav-next {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .nav-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+</style>

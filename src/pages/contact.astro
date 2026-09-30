@@ -1,0 +1,178 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+---
+
+<Layout title="Contact | HL.">
+  <div class="container section">
+    <div class="header-section">
+      <h1>Get in Touch</h1>
+      <p class="text-secondary">Interested in collaborating or have a question? Drop a message below.</p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- Main Form -->
+      <div class="contact-form-container card glass no-hover">
+        <form class="contact-form" action="#" method="POST" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required placeholder="Jane Doe" />
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="jane@example.com" />
+          </div>
+          
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject">
+              <option value="consulting">Consulting</option>
+              <option value="freelance">Freelance Project</option>
+              <option value="general">General Inquiry</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required placeholder="How can I help you?"></textarea>
+          </div>
+          
+          <Button type="submit" variant="primary" class="submit-btn">Send Message</Button>
+        </form>
+      </div>
+
+      <!-- Contact Info Sidebar -->
+      <aside class="contact-sidebar">
+        <div class="info-block">
+          <h3 class="text-sm uppercase tracking-wide font-mono text-muted mb-2">Location</h3>
+          <p class="text-secondary">San Francisco, CA<br/>Remote Friendly</p>
+        </div>
+
+        <div class="info-block">
+          <h3 class="text-sm uppercase tracking-wide font-mono text-muted mb-2">Direct Contact</h3>
+          <p>
+            <a href="mailto:hello@example.com" class="contact-link text-secondary hover-accent">hello@example.com</a>
+          </p>
+        </div>
+
+        <div class="info-block">
+          <h3 class="text-sm uppercase tracking-wide font-mono text-muted mb-2">Socials</h3>
+          <ul class="social-links">
+            <li><a href="#" class="contact-link text-secondary hover-accent">Twitter</a></li>
+            <li><a href="#" class="contact-link text-secondary hover-accent">LinkedIn</a></li>
+            <li><a href="#" class="contact-link text-secondary hover-accent">GitHub</a></li>
+            <li><a href="#" class="contact-link text-secondary hover-accent">Dribbble</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .header-section {
+    margin-bottom: 4rem;
+  }
+
+  .contact-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-grid {
+      flex-direction: row;
+    }
+  }
+
+  .contact-form-container {
+    flex: 1;
+    max-width: 48rem;
+    padding: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .contact-form-container {
+      padding: 3rem;
+    }
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--primary-text);
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background-color: var(--bg);
+    color: var(--primary-text);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted-text);
+  }
+
+  .submit-btn {
+    align-self: flex-start;
+    margin-top: 1rem;
+  }
+
+  /* Sidebar */
+  .contact-sidebar {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .mb-2 { margin-bottom: 0.5rem; }
+
+  .contact-link {
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .hover-accent:hover {
+    color: var(--accent);
+  }
+
+  .social-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+</style>

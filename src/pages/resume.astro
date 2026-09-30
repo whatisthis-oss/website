@@ -1,0 +1,403 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import Tag from '../components/Tag.astro';
+
+const experience = [
+  { 
+    role: "Research Assistant — Image Generation", 
+    company: "University Research Lab",
+    period: "Present", 
+    description: "Currently working as a research assistant focusing on image generation technologies and related AI systems. Exploring novel generative architectures and optimizing inference pipelines for state-of-the-art models." 
+  }
+];
+
+const projects = [
+  {
+    title: "MNIST Neural Network & Autograd Engine from Scratch",
+    category: "C++ Deep Learning",
+    bullets: [
+      "Implemented a complete deep learning framework from scratch in C++17 with zero external ML libraries, building a custom Tensor class, a dynamic computation graph, and a full autograd engine that mirrors the internal mechanics of PyTorch's gradient tape.",
+      "Designed gradient node classes (AddGrad, MatMulGrad, ReLUGrad, CrossEntropyGrad) and implemented reverse-mode automatic differentiation via topological-sort-based backpropagation.",
+      "Built core operations from first principles: matrix multiplication, ReLU activation, numerically stable softmax (max subtraction), cross-entropy loss, and an SGD optimizer with Xavier weight initialization.",
+      "Engineered a CSV-to-binary IDX format converter for Kaggle MNIST compatibility, plus a low-level big-endian IDX binary file reader for both image and label archives.",
+      "Trained a two-layer MLP (784 → 128 → 10) over 5 epochs with mini-batch SGD (batch size 64, learning rate 0.01), validating end-to-end correctness on the MNIST test set."
+    ],
+    tags: ["C++17", "Custom Autograd", "Backpropagation", "SGD"]
+  },
+  {
+    title: "Mask Detection Using YOLOv8",
+    category: "Computer Vision & Deployment",
+    bullets: [
+      "Trained YOLOv8 (medium variant) on a custom mask-detection dataset using transfer learning from COCO pretrained weights, producing one of the earlier rigorous YOLO-based approaches to this task.",
+      "Configured a full training pipeline with dataset.yaml specification, 10-epoch training at 640×640 input resolution, and confidence-thresholded (0.5) inference with class-specific bounding box annotation.",
+      "Deployed the trained model as an interactive Streamlit web application supporting both live webcam feed with real-time FPS metering and video file upload.",
+      "Implemented frame-level preprocessing: horizontal mirroring for natural webcam orientation and coordinate rescaling to map inference-resolution detections back to original frame dimensions."
+    ],
+    tags: ["Python", "YOLOv8", "PyTorch", "OpenCV", "Streamlit"]
+  },
+  {
+    title: "IELTS Writing Score Prediction System",
+    category: "NLP + Full-Stack ML",
+    bullets: [
+      "Fine-tuned a BERT-based regression model to predict IELTS writing scores, comparing text-only and hybrid (text + structured features) architectures.",
+      "Conducted EDA to assess score distribution, class imbalance, and feature relationships (e.g., essay length vs. score).",
+      "Performed feature engineering and preprocessing: tokenization, essay length extraction, one-hot encoding, and feature scaling.",
+      "Improved model performance via architecture experimentation and training optimizations (early stopping, checkpointing), evaluated using MAE and RMSE.",
+      "Developed a Flask-based REST API for real-time inference, integrated with an HTML/CSS/JavaScript frontend.",
+      "Deployed models in TensorFlow Saved Model format for scalable, production-ready integration."
+    ],
+    tags: ["TensorFlow", "Hugging Face", "Flask", "Scikit-learn"]
+  },
+  {
+    title: "MOSS-TTS 1.7B Inference Pipeline",
+    category: "Google Colab",
+    bullets: [
+      "Built an end-to-end Gradio inference pipeline for the MOSS-TTS 1.7B zero-shot voice-cloning model, optimized for Google Colab's T4 GPU environment.",
+      "Integrated spaCy sentence segmentation for accurate multi-sentence synthesis; generated per-segment WAV files with serial numbering and batch ZIP packaging.",
+      "Implemented GPU memory management strategies including torch.inference_mode(), gradient-free execution, cuda.empty_cache(), and lazy model loading to fit within 16 GB VRAM.",
+      "Designed a configurable multi-preset quality system (8–32 RVQ layers) with adjustable sampling parameters (temperature, top-p/k, repetition penalty).",
+      "Engineered correct single-pass audio speed resampling via torchaudio.transforms.Resample to eliminate round-trip artifacts."
+    ],
+    tags: ["PyTorch", "torchaudio", "Gradio", "spaCy"]
+  },
+  {
+    title: "Power BI Dashboards",
+    category: "Business Intelligence & Data Visualization",
+    bullets: [
+      "Pokémon Analytics Dashboard: Built an interactive Power BI report displaying overall Pokémon stats, type distributions, and comparisons. Designed intuitive slicers and filters.",
+      "Global Space Programs Dashboard: Developed a comprehensive BI report on worldwide space missions and agency budgets. Implemented DAX measures and calculated columns for KPIs.",
+      "Spotify Song Analysis Dashboard: Designed a music analytics report analyzing audio features (tempo, energy, danceability) across genres and years.",
+      "Applied data modeling best practices across all dashboards: star schema design, relationship management, and optimized DAX for performance."
+    ],
+    tags: ["Power BI", "DAX", "Power Query", "Data Modeling"]
+  },
+  {
+    title: "YouTube Transcript Scraper",
+    category: "Chrome Extension",
+    bullets: [
+      "Built a Manifest V3 Chrome extension for bulk transcript extraction from YouTube channels and playlists using DOM manipulation, supporting both manual and auto-generated captions.",
+      "Implemented concurrent processing (up to 3 simultaneous tabs) via a background service worker, significantly reducing total scraping time.",
+      "Developed a robust extraction pipeline with shadow DOM traversal, MutationObserver-based button detection, dynamic content scrolling, and multi-selector fallback strategies.",
+      "Engineered batched chrome.storage writes (3-second intervals) and configurable per-tab timeouts. Delivered export in JSON, CSV, and TXT formats with full video metadata."
+    ],
+    tags: ["JavaScript", "Chrome APIs"]
+  },
+  {
+    title: "Other Technical Projects",
+    category: "Web & Systems",
+    bullets: [
+      "Temple Information Website: Developed a demo website featuring temple info, events calendar, gallery, and online forms (HTML, CSS, JS).",
+      "Various Web Projects: Built a calculator, college note-sharing website, badminton scoreboard, and area unit converter.",
+      "Signup & Login System: Implemented a file-handling-based authentication system in C supporting unique usernames and password storage."
+    ],
+    tags: ["Web Dev", "C"]
+  }
+];
+
+const skills = {
+  "Languages": ["C/C++", "Java", "Python", "JavaScript", "SQL"],
+  "Frameworks & Libraries": ["React", "Express", "Node.js", "MongoDB", "Flask"],
+  "Technologies & Tools": ["AWS", "Docker", "Git", "GitHub", "Hugging Face", "LoRA", "CUDA", "cuDNN"],
+  "Business Intelligence": ["Power BI", "DAX", "Power Query (M)", "Data Modeling", "KPIs", "Slicers", "Drill-throughs", "Measures"]
+};
+---
+
+<Layout title="Resume | HL.">
+  <div class="container section">
+    <div class="header-section flex-header">
+      <div>
+        <h1>Resume</h1>
+        <p class="text-secondary">A summary of my professional background, projects, and skills.</p>
+      </div>
+      <Button href="/contact" variant="primary">Contact Me</Button>
+    </div>
+
+    <div class="resume-grid">
+      <!-- Main Content: Timeline -->
+      <div class="resume-main">
+        <section class="resume-section">
+          <h2>Experience</h2>
+          <div class="timeline">
+            {experience.map((job) => (
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content card glass no-hover">
+                  <div class="timeline-header">
+                    <h3 class="role">{job.role}</h3>
+                    <span class="period text-sm font-mono text-muted">{job.period}</span>
+                  </div>
+                  <div class="company text-secondary font-mono mb-2">{job.company}</div>
+                  <p class="description">{job.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="resume-section">
+          <h2>Project Work</h2>
+          <div class="timeline">
+            {projects.map((project) => (
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content card glass no-hover">
+                  <div class="timeline-header">
+                    <h3 class="role">{project.title}</h3>
+                    <span class="period text-sm font-mono text-muted">{project.category}</span>
+                  </div>
+                  <ul class="project-bullets text-secondary">
+                    {project.bullets.map((bullet) => (
+                      <li>{bullet}</li>
+                    ))}
+                  </ul>
+                  <div class="mt-2">
+                    {project.tags.map((tag) => (
+                      <Tag name={tag} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar: Skills & Certifications -->
+      <aside class="resume-sidebar">
+        <section class="resume-section">
+          <h2>Skills Dashboard</h2>
+          <div class="skills-groups">
+            {Object.entries(skills).map(([category, items]) => (
+              <div class="skill-group">
+                <h4 class="text-sm font-mono text-muted mb-2 uppercase">{category}</h4>
+                <div class="skills-tags">
+                  {items.map(skill => (
+                    <Tag name={skill} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="resume-section">
+          <h2>Awards & Certifications</h2>
+          <div class="accordion">
+            <details class="accordion-item card no-hover" open>
+              <summary class="accordion-header">AWS Certifications (4x)</summary>
+              <div class="accordion-content text-secondary text-sm mt-2">
+                Achieved 4 distinct Amazon Web Services certifications.
+              </div>
+            </details>
+            <details class="accordion-item card no-hover">
+              <summary class="accordion-header">Deloitte Australia Technology Job Simulation</summary>
+              <div class="accordion-content text-secondary text-sm mt-2">
+                Completed development tasks and wrote a dashboard proposal on Forage (Mar 2026).
+              </div>
+            </details>
+            <details class="accordion-item card no-hover">
+              <summary class="accordion-header">MERN Stack Certificate</summary>
+              <div class="accordion-content text-secondary text-sm mt-2">
+                Issued by Kush Tech Nepal.
+              </div>
+            </details>
+            <details class="accordion-item card no-hover">
+              <summary class="accordion-header">Introduction to Machine Learning</summary>
+              <div class="accordion-content text-secondary text-sm mt-2">
+                Issued by Great Learning.
+              </div>
+            </details>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .header-section {
+    margin-bottom: 4rem;
+  }
+
+  .flex-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .flex-header {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .resume-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    .resume-grid {
+      flex-direction: row;
+    }
+  }
+
+  .resume-main {
+    flex: 1;
+    max-width: 48rem;
+  }
+
+  .resume-sidebar {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .resume-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Timeline System */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--bg);
+    border: 2px solid var(--accent);
+    z-index: 1;
+    transition: background-color 0.3s ease;
+  }
+
+  .timeline-item:hover .timeline-marker {
+    background-color: var(--accent);
+  }
+
+  .timeline-content {
+    padding: 1.5rem;
+  }
+
+  .timeline-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .timeline-header {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .role {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  /* Project Bullets */
+  .project-bullets {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-top: 0.5rem;
+  }
+
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mt-2 { margin-top: 0.75rem; }
+
+  /* Skills */
+  .skills-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Accordion */
+  .accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .accordion-item {
+    padding: 1rem;
+  }
+
+  .accordion-header {
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+    padding-right: 1.5rem;
+  }
+
+  .accordion-header::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion-header::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    color: var(--muted-text);
+  }
+
+  details[open] .accordion-header::after {
+    content: '−';
+  }
+</style>

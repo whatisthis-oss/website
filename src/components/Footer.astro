@@ -1,0 +1,77 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-content">
+    <div class="footer-brand">
+      <span class="logo">HL.</span>
+      <p class="text-muted text-sm mt-2">Building AI-powered experiences that matter.</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p class="text-muted text-sm">&copy; {year} HL. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 4rem;
+    padding: 3rem 0 1.5rem;
+    border-top: 1px solid var(--border);
+    background-color: var(--surface);
+  }
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .footer-content {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+  }
+
+  .logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-text);
+  }
+
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    color: var(--secondary-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    padding-top: 1.5rem;
+  }
+</style>

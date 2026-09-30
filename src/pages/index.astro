@@ -1,0 +1,423 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+import Tag from "../components/Tag.astro";
+
+const allPosts = await getCollection("blog");
+const latestPosts = allPosts
+  .sort(
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+  )
+  .slice(0, 3);
+
+// Featured work data
+const works = [
+  {
+    title: "MNIST Neural Network Engine",
+    category: "Deep Learning",
+    description:
+      "A complete deep learning framework and autograd engine built from scratch in C++17.",
+    tags: ["C++", "ML"],
+    image:
+      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    title: "YOLOv8 Mask Detection",
+    category: "Computer Vision",
+    description:
+      "Custom trained YOLOv8 model deployed as an interactive Streamlit web application.",
+    tags: ["Python", "CV", "Web"],
+    image:
+      "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    title: "MOSS-TTS 1.7B Pipeline",
+    category: "Audio ML",
+    description:
+      "End-to-end Gradio inference pipeline for the MOSS-TTS zero-shot voice-cloning model.",
+    tags: ["ML", "Python"],
+    image:
+      "https://images.unsplash.com/photo-1589903308904-1010c2294adc?q=80&w=800&auto=format&fit=crop",
+  },
+];
+---
+
+<!-- ============================================================ PAGE LOADER — only
+lives here, only runs on first-ever visit
+============================================================ -->
+<div id="page-loader">
+  <div class="loader-logo">HL.</div>
+  <div class="loader-bar-container">
+    <div class="loader-bar" id="loader-bar"></div>
+  </div>
+</div>
+
+<!-- your existing home page content below -->
+<slot />
+
+<!-- Loader script — must be is:inline so it runs before paint -->
+<script is:inline data-astro-rerun>
+  (function () {
+    var loader = document.getElementById("page-loader");
+    var bar = document.getElementById("loader-bar");
+
+    // Only play the animation on the very first session visit
+    if (loader && bar && !sessionStorage.getItem("hasVisited")) {
+      sessionStorage.setItem("hasVisited", "true");
+
+      // 1. Give the browser one frame to paint, then start the bar
+      requestAnimationFrame(function () {
+        bar.style.width = "100%"; // CSS transition: width 0.8s
+      });
+
+      // 2. Wait for bar to finish (800ms) + small hold (200ms) = 1000ms
+      setTimeout(function () {
+        loader.style.opacity = "0";
+        loader.style.visibility = "hidden";
+
+        // 3. Remove from layout after the 0.5s CSS fade-out finishes
+        setTimeout(function () {
+          loader.style.display = "none";
+        }, 500);
+      }, 1000);
+    } else if (loader) {
+      // Returning visitor or navigated here via view-transition — hide instantly
+      loader.style.display = "none";
+    }
+  })();
+</script>
+
+<Layout title="HL. | Building AI-powered experiences">
+  <!-- Hero Section -->
+  <section class="hero-section container">
+    <div class="hero-content">
+      <h1 class="hero-title">Building intelligent systems and machine learning pipelines.</h1>
+      <p class="hero-subtitle text-secondary">
+        Specializing in computer vision, deep learning frameworks, and robust ML applications from C++ core to web deployments.
+      </p>
+      <div class="hero-ctas">
+        <Button href="/works" variant="primary">View Work</Button>
+        <Button href="/contact">Get in Touch</Button>
+      </div>
+    </div>
+    <div class="hero-background-accent"></div>
+  </section>
+
+  <!-- Current Experience -->
+  <section class="experience-preview container">
+    <div class="experience-card card glass no-hover">
+      <div class="experience-info">
+        <div class="text-muted text-sm uppercase tracking-wide font-mono mb-2">
+          Current Role
+        </div>
+        <h2 class="experience-title">Research Assistant - Image Generation</h2>
+        <p class="experience-description text-secondary">
+          Exploring novel generative architectures and optimizing inference pipelines for state-of-the-art AI systems.
+        </p>
+      </div>
+      <div class="experience-cta">
+        <Button href="/resume" variant="outline">View Full Resume</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Work -->
+  <section class="section container">
+    <div class="section-header">
+      <div class="text-muted text-sm uppercase tracking-wide font-mono mb-2">
+        Selected Projects
+      </div>
+      <h2>Featured Work</h2>
+    </div>
+    <div class="grid-3">
+      {
+        works.map((work) => (
+          <Card href="/works" class="work-card">
+            <div class="work-image-container">
+              <img
+                src={work.image}
+                alt={work.title}
+                class="work-image"
+                loading="lazy"
+              />
+            </div>
+            <div class="work-info">
+              <div class="work-meta text-sm text-secondary font-mono">
+                {work.category}
+              </div>
+              <h3 class="work-title">{work.title}</h3>
+              <p class="work-description text-secondary">{work.description}</p>
+              <div class="work-tags mt-auto">
+                {work.tags.map((tag) => (
+                  <Tag name={tag} />
+                ))}
+              </div>
+            </div>
+          </Card>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Latest Blog -->
+  <section class="section container">
+    <div class="section-header">
+      <div class="text-muted text-sm uppercase tracking-wide font-mono mb-2">
+        Writing
+      </div>
+      <h2>Latest Thoughts</h2>
+    </div>
+    <div class="blog-preview-list">
+      {
+        latestPosts.map((post) => (
+          <Card href={`/blog/${post.id}`} class="blog-preview-card">
+            <div class="blog-meta text-muted text-sm font-mono mb-2">
+              <time datetime={post.data.date}>
+                {new Date(post.data.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+              {post.data.readingTime && <span class="divider">•</span>}
+              {post.data.readingTime && <span>{post.data.readingTime}</span>}
+            </div>
+            <h3 class="blog-title">{post.data.title}</h3>
+            <p class="blog-excerpt text-secondary">{post.data.description}</p>
+            <div class="blog-tags mt-2">
+              {post.data.tags.map((tag) => (
+                <Tag name={tag} />
+              ))}
+            </div>
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-8 text-center">
+      <Button href="/blog">Read all posts</Button>
+    </div>
+  </section>
+
+  <!-- Consulting Section -->
+  <section class="consulting-section container">
+    <div class="consulting-card card glass no-hover">
+      <div class="consulting-content">
+        <div class="text-muted text-sm uppercase tracking-wide font-mono mb-2">
+          CONSULTING
+        </div>
+        <h2 class="consulting-title">
+          Available for ML models and custom system deployments
+        </h2>
+        <p class="consulting-description text-secondary">
+          I help teams architect robust machine learning pipelines, optimize inference on constrained hardware, and deploy intelligent features naturally into user flows.
+        </p>
+        <div class="consulting-ctas mt-6">
+          <Button href="/contact" variant="primary">Explore Consulting</Button>
+          <a
+            href="/contact"
+            class="text-muted text-sm font-mono hover-accent ml-4"
+            >Or send a quick message →</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero-section {
+    padding-top: 8rem;
+    padding-bottom: 6rem;
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-content {
+    max-width: 48rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .hero-title {
+      font-size: 3.5rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hero-title {
+      font-size: 4.5rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    max-width: 36rem;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-background-accent {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--accent) 15%, transparent) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(40px);
+  }
+
+  .section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .section-header {
+    margin-bottom: 3rem;
+  }
+
+  /* Experience Preview */
+  .experience-preview {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  .experience-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .experience-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .experience-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .experience-card {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .experience-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .experience-card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Work Cards (Index Page Scoped Sizes) */
+  .work-image-container {
+    height: 200px;
+  }
+  .work-title {
+    font-size: 1.25rem;
+  }
+  .work-description {
+    font-size: 0.875rem;
+  }
+
+  /* Blog Preview */
+  .blog-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .blog-preview-card {
+    display: block;
+    padding: 2rem;
+  }
+
+  .blog-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-excerpt {
+    font-size: 1rem;
+  }
+
+  /* Consulting */
+  .consulting-section {
+    padding-top: 5rem;
+    padding-bottom: 8rem;
+  }
+
+  .consulting-card {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: linear-gradient(
+      135deg,
+      var(--surface) 0%,
+      color-mix(in srgb, var(--bg) 50%, var(--surface)) 100%
+    );
+  }
+
+  @media (min-width: 768px) {
+    .consulting-card {
+      padding: 5rem 4rem;
+    }
+  }
+
+  .consulting-content {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .consulting-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .consulting-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .consulting-description {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .consulting-ctas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>
